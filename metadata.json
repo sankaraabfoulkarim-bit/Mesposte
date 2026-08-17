@@ -1,0 +1,6 @@
+{
+  "name": "VendeusePro AI",
+  "description": "SaaS de création de contenu IA (images studio, copywriter persuasif, vidéos et diaporamas avec voix-off) pour vendeuses en ligne sur WhatsApp, Instagram et Facebook.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
