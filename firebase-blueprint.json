@@ -1,0 +1,195 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Profil de la boutique et paramètres de la vendeuse",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "ID unique utilisateur Firebase Auth",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Nom de la boutique",
+          "maxLength": 120
+        },
+        "phone": {
+          "type": "string",
+          "description": "Numéro WhatsApp / Téléphone de contact",
+          "maxLength": 40
+        },
+        "slogan": {
+          "type": "string",
+          "description": "Slogan de la marque",
+          "maxLength": 200
+        },
+        "currency": {
+          "type": "string",
+          "description": "Devise de vente principale",
+          "enum": ["FCFA", "EUR", "USD", "GNF", "NGN", "CDF", "MAD"]
+        },
+        "city": {
+          "type": "string",
+          "description": "Ville",
+          "maxLength": 100
+        },
+        "country": {
+          "type": "string",
+          "description": "Pays",
+          "maxLength": 100
+        },
+        "instagramHandle": {
+          "type": "string",
+          "description": "Compte Instagram",
+          "maxLength": 80
+        },
+        "facebookPage": {
+          "type": "string",
+          "description": "Page Facebook",
+          "maxLength": 120
+        },
+        "plan": {
+          "type": "string",
+          "description": "Formule d'abonnement",
+          "enum": ["START", "STANDARD", "PREMIUM", "VIP_UNLIMITED"]
+        },
+        "credits": {
+          "type": "number",
+          "description": "Solde de crédits de création IA"
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "URL ou data URL du logo",
+          "maxLength": 500000
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Date de création du profil",
+          "maxLength": 64
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Date de dernière mise à jour",
+          "maxLength": 64
+        }
+      },
+      "required": ["userId", "name", "currency", "plan", "credits"]
+    },
+    "Creation": {
+      "title": "Creation",
+      "description": "Contenu photo, texte ou vidéo généré par l'IA",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID unique de la création",
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "string",
+          "description": "ID du propriétaire de la création",
+          "maxLength": 128
+        },
+        "title": {
+          "type": "string",
+          "description": "Nom du produit ou titre",
+          "maxLength": 200
+        },
+        "price": {
+          "type": "string",
+          "description": "Prix affiché",
+          "maxLength": 60
+        },
+        "currency": {
+          "type": "string",
+          "description": "Devise",
+          "maxLength": 10
+        },
+        "details": {
+          "type": "string",
+          "description": "Description des caractéristiques",
+          "maxLength": 2000
+        },
+        "tone": {
+          "type": "string",
+          "description": "Tonalité marketing",
+          "enum": ["urgent", "chic", "friendly", "storytelling", "whatsapp"]
+        },
+        "type": {
+          "type": "string",
+          "description": "Type de média produit",
+          "enum": ["image", "video", "copy", "all-in-one"]
+        },
+        "originalImageUrl": {
+          "type": "string",
+          "description": "Image originale source",
+          "maxLength": 1500000
+        },
+        "processedImageUrl": {
+          "type": "string",
+          "description": "Image studio finale avec décor et badge",
+          "maxLength": 1500000
+        },
+        "studioPresetId": {
+          "type": "string",
+          "description": "ID du décor studio sélectionné",
+          "maxLength": 64
+        },
+        "badgeText": {
+          "type": "string",
+          "description": "Texte du badge promo",
+          "maxLength": 80
+        },
+        "copywriting": {
+          "type": "object",
+          "description": "Textes de vente générés",
+          "properties": {
+            "whatsappStatus": { "type": "string", "maxLength": 2000 },
+            "whatsappDirectMessage": { "type": "string", "maxLength": 2000 },
+            "instagramFacebookPost": { "type": "string", "maxLength": 3000 },
+            "shortCatchphrase": { "type": "string", "maxLength": 400 },
+            "urgencyHook": { "type": "string", "maxLength": 400 },
+            "benefitsList": { "type": "array" },
+            "voiceoverScript": { "type": "string", "maxLength": 2000 }
+          }
+        },
+        "videoDuration": {
+          "type": "number",
+          "description": "Durée vidéo en secondes"
+        },
+        "musicTrackId": {
+          "type": "string",
+          "description": "ID de la piste audio",
+          "maxLength": 64
+        },
+        "voiceId": {
+          "type": "string",
+          "description": "ID de la voix-off",
+          "maxLength": 64
+        },
+        "isFavorite": {
+          "type": "boolean",
+          "description": "Statut favori"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Date de création",
+          "maxLength": 64
+        }
+      },
+      "required": ["id", "userId", "title", "type", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Profils de boutique des utilisateurs"
+    },
+    "/users/{userId}/creations/{creationId}": {
+      "schema": "Creation",
+      "description": "Créations de contenu (photos studio, textes, vidéos) par utilisateur"
+    }
+  }
+}

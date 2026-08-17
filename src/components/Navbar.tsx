@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Sparkles,
   Camera,
@@ -10,8 +10,13 @@ import {
   Plus,
   Smartphone,
   Download,
+  Cloud,
+  User as UserIcon,
+  ShieldAlert,
 } from 'lucide-react';
 import { BoutiqueProfile } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { audioSynth } from '../utils/audioSynth';
 
 interface NavbarProps {
   activeTab: 'dashboard' | 'photo' | 'copy' | 'video' | 'gallery';
@@ -20,6 +25,7 @@ interface NavbarProps {
   onOpenProfile: () => void;
   onOpenPricing: () => void;
   onOpenAuth: () => void;
+  onOpenAdminPin?: () => void;
   onPromptInstall?: () => void;
   isInstallable?: boolean;
   isIOS?: boolean;
@@ -33,24 +39,77 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenProfile,
   onOpenPricing,
   onOpenAuth,
+  onOpenAdminPin,
   onPromptInstall,
   isInstallable = false,
   isIOS = false,
   isInstalled = false,
 }) => {
+  const { user } = useAuth();
+  const [isPressingLogo, setIsPressingLogo] = useState(false);
+  const pressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const wasLongPressRef = useRef(false);
+
+  const startLongPress = () => {
+    wasLongPressRef.current = false;
+    setIsPressingLogo(true);
+    pressTimerRef.current = setTimeout(() => {
+      wasLongPressRef.current = true;
+      setIsPressingLogo(false);
+      audioSynth.playSuccessChime();
+      if (onOpenAdminPin) {
+        onOpenAdminPin();
+      }
+    }, 1500);
+  };
+
+  const cancelLongPress = () => {
+    setIsPressingLogo(false);
+    if (pressTimerRef.current) {
+      clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+  };
+
+  const handleLogoClick = () => {
+    if (wasLongPressRef.current) {
+      wasLongPressRef.current = false;
+      return;
+    }
+    setActiveTab('dashboard');
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           
-          {/* Logo & Brand */}
+          {/* Logo & Brand with Secret Admin Long-Press */}
           <div
             id="brand-logo-btn"
-            onClick={() => setActiveTab('dashboard')}
-            className="flex items-center gap-2.5 cursor-pointer select-none shrink-0"
+            onClick={handleLogoClick}
+            onMouseDown={startLongPress}
+            onMouseUp={cancelLongPress}
+            onMouseLeave={cancelLongPress}
+            onTouchStart={startLongPress}
+            onTouchEnd={cancelLongPress}
+            onTouchCancel={cancelLongPress}
+            className={`flex items-center gap-2.5 cursor-pointer select-none shrink-0 transition-transform ${
+              isPressingLogo ? 'scale-95' : 'hover:scale-[1.01]'
+            }`}
+            title="VendeusePro AI (Appui long: Console Admin Secrète)"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-rose-500 to-pink-500 flex items-center justify-center text-white shadow-md shadow-rose-200">
+            <div
+              className={`w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-rose-500 to-pink-500 flex items-center justify-center text-white shadow-md shadow-rose-200 relative transition-all ${
+                isPressingLogo ? 'ring-4 ring-amber-400 animate-pulse' : ''
+              }`}
+            >
               <Sparkles className="w-5 h-5" />
+              {isPressingLogo && (
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-amber-400 text-slate-900 flex items-center justify-center text-[8px] font-black animate-ping">
+                  ●
+                </div>
+              )}
             </div>
             <div>
               <div className="flex items-center gap-1.5">
@@ -181,14 +240,31 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             </button>
 
-            {/* Phone Login / Account Button */}
+            {/* Account / Cloud Auth Button */}
             <button
               id="btn-phone-auth"
               onClick={onOpenAuth}
-              className="hidden sm:flex items-center gap-1 text-slate-600 hover:text-slate-900 p-2 rounded-xl hover:bg-slate-100 text-xs font-semibold cursor-pointer"
-              title="Connexion Rapide Mobile"
+              className={`flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
+                user
+                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
+                  : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+              }`}
+              title={user ? `Connecté: ${user.email || user.displayName || 'Compte Firebase'}` : 'Se connecter / Synchroniser'}
             >
-              <Smartphone className="w-4 h-4 text-slate-500" />
+              {user ? (
+                <>
+                  <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                    {user.displayName ? user.displayName.charAt(0).toUpperCase() : <UserIcon className="w-3 h-3" />}
+                  </div>
+                  <Cloud className="w-3.5 h-3.5 text-emerald-600 hidden sm:inline" />
+                  <span className="hidden sm:inline text-[11px] font-bold text-emerald-700">Cloud Sync</span>
+                </>
+              ) : (
+                <>
+                  <Smartphone className="w-4 h-4 text-slate-600" />
+                  <span className="hidden sm:inline text-[11px] font-bold">Connexion</span>
+                </>
+              )}
             </button>
           </div>
         </div>

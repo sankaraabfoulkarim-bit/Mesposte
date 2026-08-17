@@ -2,7 +2,23 @@ export type ToneType = 'urgent' | 'chic' | 'friendly' | 'storytelling' | 'whatsa
 
 export type CurrencyType = 'FCFA' | 'EUR' | 'USD' | 'GNF' | 'NGN' | 'CDF' | 'MAD';
 
-export type UserPlan = 'START' | 'STANDARD' | 'PREMIUM';
+export type UserPlan = 'START' | 'STANDARD' | 'PREMIUM' | 'VIP_UNLIMITED';
+
+export interface ClientSubscription {
+  id: string;
+  accessCode: string; // e.g. VP-9482, VIP-GOLD, 7784-2026
+  clientName: string; // e.g. "Fatou Glam", "Aïcha Dakar Fashion"
+  clientPhone: string; // e.g. "+221 77 123 45 67"
+  plan: UserPlan;
+  creditsGranted: number; // e.g. 50, 150, 500, 9999
+  validDays: number; // e.g. 30, 90, 365, 0 (0 = permanent / illimité)
+  expiresAt: string | null;
+  status: 'active' | 'used' | 'expired' | 'revoked';
+  notes?: string;
+  createdAt: string;
+  lastUsedAt?: string | null;
+  usedCount: number;
+}
 
 export interface BoutiqueProfile {
   name: string;

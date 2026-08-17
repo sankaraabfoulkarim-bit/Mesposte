@@ -42,6 +42,56 @@ class SoundEngine {
     }
   }
 
+  // Play light click feedback sound
+  playClickSound() {
+    try {
+      const ctx = this.getContext();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(300, now + 0.04);
+
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.045);
+    } catch {
+      // ignore
+    }
+  }
+
+  // Play subtle warning or error notice
+  playNoticeSound() {
+    try {
+      const ctx = this.getContext();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.setValueAtTime(220, now + 0.08);
+
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.23);
+    } catch {
+      // ignore
+    }
+  }
+
   // Play ambient musical backing track for video preview
   playBackgroundMusic(genre: string = 'Afro Chill', volume: number = 0.3) {
     this.stopBackgroundMusic();

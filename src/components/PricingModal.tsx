@@ -10,10 +10,13 @@ import {
   Smartphone,
   CreditCard,
   CheckCircle2,
+  KeyRound,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { CREDIT_PACKAGES } from '../data/presets';
 import { BoutiqueProfile, CreditPackage, PaymentMethod, UserPlan } from '../types';
+import { redeemAccessCode } from '../services/subscriptionService';
+import { audioSynth } from '../utils/audioSynth';
 
 interface PricingModalProps {
   isOpen: boolean;
@@ -21,6 +24,7 @@ interface PricingModalProps {
   profile: BoutiqueProfile;
   onAddCredits: (credits: number) => void;
   onUpgradePlan: (plan: UserPlan) => void;
+  onProfileUpdate?: (updated: BoutiqueProfile) => void;
 }
 
 export const PricingModal: React.FC<PricingModalProps> = ({
@@ -29,6 +33,7 @@ export const PricingModal: React.FC<PricingModalProps> = ({
   profile,
   onAddCredits,
   onUpgradePlan,
+  onProfileUpdate,
 }) => {
   const [activeTab, setActiveTab] = useState<'packs' | 'plans'>('packs');
   const [selectedPack, setSelectedPack] = useState<CreditPackage>(CREDIT_PACKAGES[1]);
@@ -37,7 +42,36 @@ export const PricingModal: React.FC<PricingModalProps> = ({
   const [processing, setProcessing] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Access code input
+  const [accessCode, setAccessCode] = useState('');
+  const [codeMessage, setCodeMessage] = useState<{ success: boolean; text: string } | null>(null);
+
   if (!isOpen) return null;
+
+  const handleRedeemCode = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!accessCode.trim()) return;
+
+    const res = redeemAccessCode(accessCode, profile);
+    if (res.success && res.updatedProfile) {
+      if (onProfileUpdate) {
+        onProfileUpdate(res.updatedProfile);
+      }
+      audioSynth.playSuccessChime();
+      try {
+        confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+      } catch {
+        // ignore
+      }
+      setCodeMessage({ success: true, text: res.message });
+      setTimeout(() => {
+        onClose();
+      }, 1800);
+    } else {
+      audioSynth.playNoticeSound();
+      setCodeMessage({ success: false, text: res.message });
+    }
+  };
 
   const handlePay = () => {
     setProcessing(true);
@@ -356,6 +390,43 @@ export const PricingModal: React.FC<PricingModalProps> = ({
             </div>
           </div>
         )}
+
+        {/* Promo / Partner / Activation Code Section */}
+        <div className="mt-6 pt-5 border-t border-slate-100">
+          <form onSubmit={handleRedeemCode} className="p-3.5 bg-amber-50/60 rounded-2xl border border-amber-200/70">
+            <div className="flex items-center gap-2 mb-2">
+              <KeyRound className="w-4 h-4 text-amber-600" />
+              <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                Vous avez un code d'activation ou une formule négociée ?
+              </label>
+            </div>
+            <div className="flex gap-2">
+              <input
+                id="input-pricing-access-code"
+                type="text"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
+                placeholder="Ex: VP-START-50 ou VIP-761278-PASS"
+                className="flex-grow px-3.5 py-2 bg-white rounded-xl border border-amber-300 text-xs font-mono font-bold text-slate-900 uppercase tracking-wider focus:outline-none focus:border-amber-500"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl transition-colors cursor-pointer shrink-0"
+              >
+                Activer
+              </button>
+            </div>
+            {codeMessage && (
+              <p
+                className={`text-[11px] font-semibold mt-2 ${
+                  codeMessage.success ? 'text-emerald-700 font-bold' : 'text-rose-600'
+                }`}
+              >
+                {codeMessage.text}
+              </p>
+            )}
+          </form>
+        </div>
       </div>
     </div>
   );
