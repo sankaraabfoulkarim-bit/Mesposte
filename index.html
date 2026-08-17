@@ -1,17 +1,50 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr" class="h-full bg-slate-900">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-    <meta name="description" content="An application built with Google AI Studio." />
-    <meta property="og:title" content="My Google AI Studio App" />
-    <meta property="og:description" content="An application built with Google AI Studio." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>VendeusePro AI — Studio Mobile de Vente en Ligne</title>
+    <meta name="description" content="SaaS IA tout-en-un pour créatrices et vendeuses en ligne : photos studio professionnelles, textes de vente WhatsApp/Instagram et vidéos avec voix-off en 3 clics." />
+    
+    <!-- PWA Web App Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    
+    <!-- Theme & Status Bar Colors -->
+    <meta name="theme-color" content="#0F172A" />
+    <meta name="msapplication-TileColor" content="#0F172A" />
+    <meta name="msapplication-navbutton-color" content="#0F172A" />
+    
+    <!-- iOS / Safari Mobile Web App Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="VendeusePro" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="shortcut icon" href="/favicon.svg" />
+
+    <!-- Open Graph & Social Cards -->
+    <meta property="og:title" content="VendeusePro AI — Studio de Vente en Ligne" />
+    <meta property="og:description" content="Créez des photos studio pro, des textes de vente WhatsApp et des vidéos en 3 clics." />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content="/icon-512.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VendeusePro AI" />
+    <meta name="twitter:description" content="Studio mobile IA pour vendeuses en ligne WhatsApp & Instagram." />
+    <meta name="twitter:image" content="/icon-512.png" />
+
+    <!-- Mobile optimization flags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
   </head>
-  <body>
-    <div id="root"></div>
+  <body class="h-full bg-slate-100/70 text-slate-900 antialiased overscroll-none select-none md:select-auto">
+    <div id="root" class="min-h-full"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

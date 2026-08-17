@@ -9,6 +9,10 @@ import { PhoneAuthModal } from './components/PhoneAuthModal';
 import { BoutiqueProfileModal } from './components/BoutiqueProfileModal';
 import { PricingModal } from './components/PricingModal';
 import { CreationDetailModal } from './components/CreationDetailModal';
+import { PWAInstallBanner } from './components/PWAInstallBanner';
+import { OfflineIndicator } from './components/OfflineIndicator';
+import { PWAUpdateToast } from './components/PWAUpdateToast';
+import { usePWA } from './hooks/usePWA';
 import {
   BoutiqueProfile,
   CreationItem,
@@ -25,10 +29,32 @@ import { DEMO_PRODUCTS } from './data/presets';
 import { audioSynth } from './utils/audioSynth';
 
 export function App() {
-  // Navigation
+  // PWA state & installation hooks
+  const {
+    isInstallable,
+    isInstalled,
+    isOnline,
+    isIOS,
+    isUpdateAvailable,
+    bannerDismissed,
+    promptInstall,
+    updateApp,
+    dismissBanner,
+  } = usePWA();
+
+  // Navigation (with PWA shortcut support via ?tab= parameter)
   const [activeTab, setActiveTab] = useState<
     'dashboard' | 'photo' | 'copy' | 'video' | 'gallery'
-  >('dashboard');
+  >(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab') as any;
+      if (['dashboard', 'photo', 'copy', 'video', 'gallery'].includes(tabParam)) {
+        return tabParam;
+      }
+    }
+    return 'dashboard';
+  });
 
   // State
   const [profile, setProfile] = useState<BoutiqueProfile>(getStoredProfile);
@@ -111,15 +137,29 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100/70 text-slate-800 font-sans flex flex-col selection:bg-rose-500 selection:text-white">
+    <div className="min-h-screen bg-slate-100/70 text-slate-800 font-sans flex flex-col selection:bg-rose-500 selection:text-white pb-16 md:pb-0">
+      {/* PWA Install Banner */}
+      <PWAInstallBanner
+        isInstallable={isInstallable}
+        isInstalled={isInstalled}
+        isIOS={isIOS}
+        bannerDismissed={bannerDismissed}
+        onPromptInstall={promptInstall}
+        onDismiss={dismissBanner}
+      />
+
       {/* Top Main Navigation */}
       <Navbar
         activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab)}
+        setActiveTab={(tab) => setActiveTab(tab)}
         profile={profile}
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenProfile={() => setIsProfileOpen(true)}
         onOpenPricing={() => setIsPricingOpen(true)}
+        onPromptInstall={promptInstall}
+        isInstallable={isInstallable}
+        isIOS={isIOS}
+        isInstalled={isInstalled}
       />
 
       {/* Main Content Area */}
@@ -176,6 +216,13 @@ export function App() {
         )}
       </main>
 
+      {/* PWA Offline and Update Toasts */}
+      <OfflineIndicator isOnline={isOnline} />
+      <PWAUpdateToast
+        isUpdateAvailable={isUpdateAvailable}
+        onUpdate={updateApp}
+      />
+
       {/* Modals */}
       <PhoneAuthModal
         isOpen={isAuthOpen}
@@ -188,6 +235,10 @@ export function App() {
         onClose={() => setIsProfileOpen(false)}
         profile={profile}
         onSaveProfile={(updated) => setProfile(updated)}
+        onPromptInstall={promptInstall}
+        isInstallable={isInstallable}
+        isInstalled={isInstalled}
+        isIOS={isIOS}
       />
 
       <PricingModal
@@ -207,3 +258,4 @@ export function App() {
   );
 }
 export default App;
+

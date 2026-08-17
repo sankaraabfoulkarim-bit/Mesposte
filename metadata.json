@@ -1,6 +1,6 @@
 {
   "name": "VendeusePro AI",
-  "description": "SaaS de création de contenu IA (images studio, copywriter persuasif, vidéos et diaporamas avec voix-off) pour vendeuses en ligne sur WhatsApp, Instagram et Facebook.",
+  "description": "Progressive Web App (PWA) de création de contenu IA (photos studio pro, copywriter persuasif WhatsApp & Instagram, vidéos avec voix-off) installable sur mobile et hors-ligne pour vendeuses en ligne.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

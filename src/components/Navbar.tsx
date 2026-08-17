@@ -5,12 +5,11 @@ import {
   PenTool,
   Video,
   FolderHeart,
-  Crown,
   Store,
   Coins,
   Plus,
-  MessageCircle,
   Smartphone,
+  Download,
 } from 'lucide-react';
 import { BoutiqueProfile } from '../types';
 
@@ -21,6 +20,10 @@ interface NavbarProps {
   onOpenProfile: () => void;
   onOpenPricing: () => void;
   onOpenAuth: () => void;
+  onPromptInstall?: () => void;
+  isInstallable?: boolean;
+  isIOS?: boolean;
+  isInstalled?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -30,6 +33,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenProfile,
   onOpenPricing,
   onOpenAuth,
+  onPromptInstall,
+  isInstallable = false,
+  isIOS = false,
+  isInstalled = false,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
@@ -65,7 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="nav-tab-dashboard"
               onClick={() => setActiveTab('dashboard')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'dashboard'
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
@@ -77,7 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="nav-tab-photo"
               onClick={() => setActiveTab('photo')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'photo'
                   ? 'bg-white text-rose-600 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
@@ -89,7 +96,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="nav-tab-copy"
               onClick={() => setActiveTab('copy')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'copy'
                   ? 'bg-white text-indigo-600 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
@@ -101,7 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="nav-tab-video"
               onClick={() => setActiveTab('video')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'video'
                   ? 'bg-white text-emerald-600 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
@@ -113,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="nav-tab-gallery"
               onClick={() => setActiveTab('gallery')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
                 activeTab === 'gallery'
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
@@ -124,13 +131,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Right Actions: Credits & Boutique Profile */}
+          {/* Right Actions: PWA Install, Credits & Boutique Profile */}
           <div className="flex items-center gap-2 sm:gap-3">
+            
+            {/* Install PWA Button (Visible if installable or iOS and not already installed) */}
+            {!isInstalled && (isInstallable || isIOS) && onPromptInstall && (
+              <button
+                id="btn-navbar-install-pwa"
+                onClick={onPromptInstall}
+                className="hidden sm:flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white px-2.5 py-1.5 rounded-xl transition-all text-xs font-bold shadow-sm group active:scale-95"
+                title="Installer l'application sur votre écran d'accueil"
+              >
+                <Download className="w-3.5 h-3.5 text-rose-400 group-hover:scale-110 transition-transform" />
+                <span className="hidden md:inline">Installer l'App</span>
+                <span className="md:hidden">App</span>
+              </button>
+            )}
+
             {/* Credit Balance Badge with Recharge CTA */}
             <button
               id="btn-recharge-credits"
               onClick={onOpenPricing}
-              className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1.5 rounded-xl transition-all text-amber-900 group"
+              className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1.5 rounded-xl transition-all text-amber-900 group cursor-pointer"
               title="Recharger des crédits"
             >
               <Coins className="w-4 h-4 text-amber-600 group-hover:scale-110 transition-transform" />
@@ -147,7 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="btn-boutique-profile"
               onClick={onOpenProfile}
-              className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-slate-800"
+              className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-slate-800 cursor-pointer"
               title="Configurer ma boutique"
             >
               <div className="w-7 h-7 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center font-bold text-xs">
@@ -163,7 +185,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="btn-phone-auth"
               onClick={onOpenAuth}
-              className="hidden sm:flex items-center gap-1 text-slate-600 hover:text-slate-900 p-2 rounded-xl hover:bg-slate-100 text-xs font-semibold"
+              className="hidden sm:flex items-center gap-1 text-slate-600 hover:text-slate-900 p-2 rounded-xl hover:bg-slate-100 text-xs font-semibold cursor-pointer"
               title="Connexion Rapide Mobile"
             >
               <Smartphone className="w-4 h-4 text-slate-500" />
@@ -173,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-2 py-1.5 flex justify-around items-center shadow-lg">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-2 py-1.5 flex justify-around items-center shadow-lg pb-[max(0.375rem,env(safe-area-inset-bottom))]">
         <button
           onClick={() => setActiveTab('dashboard')}
           className={`flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-bold ${
@@ -223,3 +245,4 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
+

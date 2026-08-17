@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Store, MessageCircle, DollarSign, MapPin, Sparkles, Check } from 'lucide-react';
+import { X, Store, MessageCircle, DollarSign, MapPin, Sparkles, Check, Smartphone, Download, CheckCircle2 } from 'lucide-react';
 import { BoutiqueProfile, CurrencyType } from '../types';
 
 interface BoutiqueProfileModalProps {
@@ -7,6 +7,10 @@ interface BoutiqueProfileModalProps {
   onClose: () => void;
   profile: BoutiqueProfile;
   onSave: (updated: BoutiqueProfile) => void;
+  onPromptInstall?: () => void;
+  isInstallable?: boolean;
+  isInstalled?: boolean;
+  isIOS?: boolean;
 }
 
 export const BoutiqueProfileModal: React.FC<BoutiqueProfileModalProps> = ({
@@ -14,6 +18,10 @@ export const BoutiqueProfileModal: React.FC<BoutiqueProfileModalProps> = ({
   onClose,
   profile,
   onSave,
+  onPromptInstall,
+  isInstallable = false,
+  isInstalled = false,
+  isIOS = false,
 }) => {
   const [name, setName] = useState(profile.name);
   const [phone, setPhone] = useState(profile.phone);
@@ -164,6 +172,54 @@ export const BoutiqueProfileModal: React.FC<BoutiqueProfileModalProps> = ({
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-200 text-slate-900 text-sm"
               />
             </div>
+          </div>
+
+          {/* PWA Mobile App Card */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between gap-3 border border-indigo-500/20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-500 p-0.5 shrink-0">
+                <img
+                  src="/icon-192.png"
+                  alt="App Icon"
+                  className="w-full h-full object-cover rounded-[10px]"
+                />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white flex items-center gap-1.5">
+                  Application Mobile PWA
+                  {isInstalled && (
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">
+                      Installée
+                    </span>
+                  )}
+                </p>
+                <p className="text-[11px] text-slate-300">
+                  {isInstalled
+                    ? 'Application active sur votre écran d’accueil'
+                    : 'Installez sur votre téléphone pour un accès 1-clic'}
+                </p>
+              </div>
+            </div>
+
+            {!isInstalled && (isInstallable || isIOS) && onPromptInstall && (
+              <button
+                type="button"
+                id="btn-profile-install-pwa"
+                onClick={() => {
+                  onClose();
+                  onPromptInstall();
+                }}
+                className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold flex items-center gap-1 shrink-0 transition-colors shadow-sm cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Installer</span>
+              </button>
+            )}
+            {isInstalled && (
+              <div className="text-emerald-400 flex items-center gap-1 text-xs font-bold pr-2">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+            )}
           </div>
 
           <div className="pt-4 flex gap-3">
